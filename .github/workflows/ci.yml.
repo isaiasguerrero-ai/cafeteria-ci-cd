@@ -1,0 +1,32 @@
+name: CI-CD Cafeteria
+on:
+  push:
+    branches: [principal]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validar:
+    name: CI - Validar programa
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar proyecto
+        uses: actions/checkout@v4
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Ejecutar pruebas
+        run: node --test pedido.test.js
+  entregar:
+    name: CD - Preparar entrega
+    needs: validar
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar proyecto
+        uses: actions/checkout@v4
+      - name: Guardar artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: pedido-validado
+          path: pedido.js
